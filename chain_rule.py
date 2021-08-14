@@ -104,16 +104,12 @@ def chain_deriv_3(chain: Chain, input_range: np.ndarray) -> np.ndarray:
 
 
 def rection_der(chain: Chain, input_range: np.ndarray,ind_chain:int) -> np.ndarray:
-    if ind_chain == 0:
-        f1_x = chain[0](input_range)
-        return deriv(chain[0],input_range)*rection_der(chain,f1_x,ind_chain+1)
-    if input_range == len(chain):
-        fx = chain[ind_chain](input_range)
-        return deriv(chain[ind_chain],input_range)*rection_der(chain,fx,ind_chain+1)
+    if ind_chain == len(chain)-1:
+        f_x = chain[ind_chain](input_range)
+        return deriv(chain[ind_chain],input_range)
+    f_x = chain[ind_chain](input_range)
+    return deriv(chain[ind_chain],input_range)*rection_der(chain,f_x,ind_chain+1,)
     
-
-
-
 
 
 # %%
