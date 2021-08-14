@@ -1,4 +1,5 @@
-#%%
+# %%
+from collections import namedtuple
 import numpy as np
 from typing import Callable
 from typing import List
@@ -50,16 +51,72 @@ def chain_deriv_2(chain: Chain, input_range: np.ndarray) -> np.ndarray:
 
 
 PLOT_RANGE = np.arange(-3, 3, 0.01)
-chain = lambda d: chain_length_2([square, sigmoid],d)
-chain_der  = lambda d: chain_deriv_2([square, sigmoid],d)
+def chain(d): return chain_length_2([square, sigmoid], d)
+
+
+def chain_der(d): return chain_deriv_2([square, sigmoid], d)
+
 
 sns.set_context("notebook", rc={"lines.linewidth": 2})
 
-sns.lineplot(x=PLOT_RANGE, y=chain(PLOT_RANGE)) 
+sns.lineplot(x=PLOT_RANGE, y=chain(PLOT_RANGE))
 sns.lineplot(x=PLOT_RANGE, y=chain_der(PLOT_RANGE))
+
+
+# %%
+
+
+def chain_deriv_3(chain: Chain, input_range: np.ndarray) -> np.ndarray:
+    """calcult deriv for 3 functions 
+
+    Args:
+        chain (Chain): 3 functions from numpy format
+        input_range (np.ndarray): range to calcult, by nmpy range
+
+    Returns:
+        np.ndarray: numpy range 
+    """
+
+    assert len(chain) == 3, \
+        'this function require chain to 3 functions'
+
+    f1, f2,f3 = chain[0],chain[1],chain[2]
+
+
+    #f1(x)
+    f1_x = f1(input_range)
+
+    #f2(f1(x))
+    f2_x = f2(f1_x)
+
+    #df3du 
+    df3du = deriv(f3,f2_x)
+    
+    #df2du
+    df2du = deriv(f2,f2_x) 
+    
+    #df1dx
+    df1dx = deriv(f1,input_range)
+
+
+    return df1dx*df2du*df3du
+
+
+
+def rection_der(chain: Chain, input_range: np.ndarray,ind_chain:int) -> np.ndarray:
+    if ind_chain == 0:
+        f1_x = chain[0](input_range)
+        return deriv(chain[0],input_range)*rection_der(chain,f1_x,ind_chain+1)
+    if input_range == len(chain):
+        fx = chain[ind_chain](input_range)
+        return deriv(chain[ind_chain],input_range)*rection_der(chain,fx,ind_chain+1)
+    
+
+
 
 
 
 # %%
+
 
 
